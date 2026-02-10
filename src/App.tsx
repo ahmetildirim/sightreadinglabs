@@ -267,6 +267,8 @@ export default function App() {
         staffRef={staffRef}
         scoreXml={score.xml}
         cursorStyle={cursorStyle}
+        midiConnected={midiConnected}
+        midiLabel={midiLabel}
         rangeLabel={`${minNote} - ${maxNote}`}
         totalNotes={totalNotes}
         completedNotes={completedNotes}
@@ -275,6 +277,7 @@ export default function App() {
         timerRunning={timer.isRunning}
         onToggleTimer={timer.toggle}
         missedMessage={missedMessage}
+        onOpenSettings={() => openSettings("practice")}
         onFinish={finishSession}
       />
     );

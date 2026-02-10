@@ -1,4 +1,5 @@
 import type { MidiInputOption } from "../types";
+import AppTopBar from "./AppTopBar";
 
 interface SettingsPageProps {
     darkMode: boolean;
@@ -21,19 +22,14 @@ export default function SettingsPage({
 }: SettingsPageProps) {
     return (
         <div className="settings-page">
-            <nav className="settings-nav">
-                <div className="settings-nav-inner">
-                    <div className="settings-brand">
-                        <div className="brand-mark">88</div>
-                        <span>88keys.app</span>
-                    </div>
-
+            <AppTopBar
+                rightSlot={
                     <button type="button" className="back-button" onClick={onBack}>
                         <span>Back to Practice</span>
                         <span className="material-symbols-outlined">close</span>
                     </button>
-                </div>
-            </nav>
+                }
+            />
 
             <main className="settings-main">
                 <div className="settings-wrapper">

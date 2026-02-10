@@ -1,5 +1,6 @@
 import type { NoteName } from "../generator";
 import { MIN_TOTAL_NOTES, MAX_TOTAL_NOTES } from "../constants";
+import AppTopBar from "./AppTopBar";
 import KeyStepper from "./KeyStepper";
 
 interface GeneratorSetupPageProps {
@@ -43,31 +44,28 @@ export default function GeneratorSetupPage({
 }: GeneratorSetupPageProps) {
     return (
         <div className="setup-page">
-            <nav className="setup-nav">
-                <div className="setup-brand">
-                    <span className="material-symbols-outlined">piano</span>
-                    <span>88keys.app</span>
-                </div>
+            <AppTopBar
+                rightSlot={
+                    <>
+                        <div className="midi-chip">
+                            <span
+                                className={`status-dot ${midiConnected ? "connected" : "disconnected"}`}
+                                aria-hidden
+                            />
+                            <span className="midi-chip-label">{midiLabel}</span>
+                        </div>
 
-                <div className="setup-nav-right">
-                    <div className="midi-chip">
-                        <span
-                            className={`status-dot ${midiConnected ? "connected" : "disconnected"}`}
-                            aria-hidden
-                        />
-                        <span className="midi-chip-label">{midiLabel}</span>
-                    </div>
-
-                    <button
-                        type="button"
-                        className="profile-button"
-                        aria-label="Open settings"
-                        onClick={onOpenSettings}
-                    >
-                        <span className="material-symbols-outlined">settings</span>
-                    </button>
-                </div>
-            </nav>
+                        <button
+                            type="button"
+                            className="profile-button"
+                            aria-label="Open settings"
+                            onClick={onOpenSettings}
+                        >
+                            <span className="material-symbols-outlined">settings</span>
+                        </button>
+                    </>
+                }
+            />
 
             <main className="setup-main">
                 <div className="setup-wrapper">

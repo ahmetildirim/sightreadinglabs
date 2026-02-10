@@ -2,8 +2,7 @@
 /* Dark mode tuning                                                           */
 /* -------------------------------------------------------------------------- */
 
-.dark .setup-nav,
-.dark .settings-nav {
+.dark .app-top-bar {
     background: color-mix(in srgb, var(--surface) 88%, transparent);
 }
 

@@ -93,6 +93,48 @@ input[type="number"] {
     text-rendering: optimizeLegibility;
 }
 
+.app-top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    min-height: 64px;
+    border-bottom: 1px solid var(--line);
+    background: color-mix(in srgb, var(--surface) 84%, transparent);
+    backdrop-filter: blur(10px);
+}
+
+.app-top-bar-inner {
+    width: min(100%, 1340px);
+    margin: 0 auto;
+    min-height: inherit;
+    padding: 0 clamp(16px, 4vw, 44px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.app-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: color-mix(in srgb, var(--text-main) 96%, black 4%);
+}
+
+.app-brand .material-symbols-outlined {
+    font-size: 30px;
+    color: var(--blue);
+}
+
+.app-top-bar-right {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+}
+
 .status-dot {
     width: 8px;
     height: 8px;

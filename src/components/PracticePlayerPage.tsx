@@ -1,11 +1,14 @@
 import type { RefObject } from "react";
 
+import AppTopBar from "./AppTopBar";
 import Staff, { type StaffHandle } from "./Staff";
 
 interface PracticePlayerPageProps {
     staffRef: RefObject<StaffHandle | null>;
     scoreXml: string;
     cursorStyle: { color: string; alpha: number };
+    midiConnected: boolean;
+    midiLabel: string;
     rangeLabel: string;
     totalNotes: number;
     completedNotes: number;
@@ -14,6 +17,7 @@ interface PracticePlayerPageProps {
     timerRunning: boolean;
     onToggleTimer: () => void;
     missedMessage: string | null;
+    onOpenSettings: () => void;
     onFinish: () => void;
 }
 
@@ -21,6 +25,8 @@ export default function PracticePlayerPage({
     staffRef,
     scoreXml,
     cursorStyle,
+    midiConnected,
+    midiLabel,
     rangeLabel,
     totalNotes,
     completedNotes,
@@ -29,6 +35,7 @@ export default function PracticePlayerPage({
     timerRunning,
     onToggleTimer,
     missedMessage,
+    onOpenSettings,
     onFinish,
 }: PracticePlayerPageProps) {
     const completionPercent = Math.min(
@@ -39,6 +46,29 @@ export default function PracticePlayerPage({
 
     return (
         <div className="practice-page">
+            <AppTopBar
+                rightSlot={
+                    <>
+                        <div className="midi-chip">
+                            <span
+                                className={`status-dot ${midiConnected ? "connected" : "disconnected"}`}
+                                aria-hidden
+                            />
+                            <span className="midi-chip-label">{midiLabel}</span>
+                        </div>
+
+                        <button
+                            type="button"
+                            className="profile-button"
+                            aria-label="Open settings"
+                            onClick={onOpenSettings}
+                        >
+                            <span className="material-symbols-outlined">settings</span>
+                        </button>
+                    </>
+                }
+            />
+
             <header className="practice-header">
                 <div className="practice-header-inner">
                     <div className="practice-header-top">
