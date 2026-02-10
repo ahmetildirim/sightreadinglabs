@@ -79,6 +79,51 @@ const Staff = forwardRef<StaffHandle, StaffProps>(function Staff(
     cursor.show();
   }, []);
 
+  const getScrollContainer = useCallback((): HTMLElement | null => {
+    const root = containerRef.current;
+    if (!root) return null;
+
+    const practiceScore = root.closest(".practice-score");
+    if (practiceScore instanceof HTMLElement) {
+      return practiceScore;
+    }
+
+    return root.parentElement instanceof HTMLElement ? root.parentElement : null;
+  }, []);
+
+  /** Keep the cursor horizontally visible inside the score viewport. */
+  const scrollCursorIntoView = useCallback(
+    (behavior: ScrollBehavior) => {
+      const scrollContainer = getScrollContainer();
+      const cursorElement = osmdRef.current?.cursor?.cursorElement;
+      if (!scrollContainer || !cursorElement) return;
+
+      const containerRect = scrollContainer.getBoundingClientRect();
+      const cursorRect = cursorElement.getBoundingClientRect();
+      const currentLeft = scrollContainer.scrollLeft;
+
+      const leftPadding = 72;
+      const rightPadding = Math.max(120, Math.round(scrollContainer.clientWidth * 0.26));
+
+      const cursorLeft = cursorRect.left - containerRect.left + currentLeft;
+      const cursorRight = cursorRect.right - containerRect.left + currentLeft;
+
+      const visibleLeft = currentLeft + leftPadding;
+      const visibleRight = currentLeft + scrollContainer.clientWidth - rightPadding;
+
+      let targetLeft = currentLeft;
+      if (cursorLeft < visibleLeft) {
+        targetLeft = Math.max(0, cursorLeft - leftPadding);
+      } else if (cursorRight > visibleRight) {
+        targetLeft = cursorRight - scrollContainer.clientWidth + rightPadding;
+      }
+
+      if (Math.abs(targetLeft - currentLeft) < 1) return;
+      scrollContainer.scrollTo({ left: targetLeft, behavior });
+    },
+    [getScrollContainer],
+  );
+
   /** Lazily creates the OSMD instance (exactly once per mount). */
   const getOrCreateOsmd = useCallback((): OpenSheetMusicDisplay | null => {
     if (osmdRef.current) return osmdRef.current;
@@ -90,9 +135,8 @@ const Staff = forwardRef<StaffHandle, StaffProps>(function Staff(
       drawPartNames: false,
       drawMeasureNumbers: false,
       followCursor: true,
-      stretchLastSystemLine: true,
+      renderSingleHorizontalStaffline: true,
       spacingFactorSoftmax: 100,
-      autoBeam: true,
       autoResize: true,
     });
 
@@ -101,9 +145,21 @@ const Staff = forwardRef<StaffHandle, StaffProps>(function Staff(
 
   // Expose imperative cursor controls to the parent.
   useImperativeHandle(ref, () => ({
-    nextCursor: () => osmdRef.current?.cursor?.next(),
-    resetCursor: () => osmdRef.current?.cursor?.reset(),
-  }), []);
+    nextCursor: () => {
+      osmdRef.current?.cursor?.next();
+      window.requestAnimationFrame(() => {
+        scrollCursorIntoView("smooth");
+      });
+    },
+    resetCursor: () => {
+      osmdRef.current?.cursor?.reset();
+      const scrollContainer = getScrollContainer();
+      scrollContainer?.scrollTo({ left: 0, behavior: "auto" });
+      window.requestAnimationFrame(() => {
+        scrollCursorIntoView("auto");
+      });
+    },
+  }), [getScrollContainer, scrollCursorIntoView]);
 
   // Load and render the score whenever the XML changes.
   useEffect(() => {
@@ -120,12 +176,14 @@ const Staff = forwardRef<StaffHandle, StaffProps>(function Staff(
       osmd.render();
       applyCursorStyle(cursorStyleRef.current);
       osmd.cursor?.reset();
+      const scrollContainer = getScrollContainer();
+      scrollContainer?.scrollTo({ left: 0, behavior: "auto" });
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [scoreXml, getOrCreateOsmd, applyCursorStyle]);
+  }, [scoreXml, getOrCreateOsmd, applyCursorStyle, getScrollContainer]);
 
   // Update cursor appearance independently of score rendering.
   useEffect(() => {
