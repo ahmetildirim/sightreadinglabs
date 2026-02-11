@@ -40,7 +40,7 @@ export default function AboutPage({ onBack }: AboutPageProps) {
 
                         <p>
                             For now, everything works offline. There are no accounts, no profiles,
-                            and no cloud storage - all data stays on your device. The app is
+                            and no cloud storage and all data stays on your device. The app is
                             completely free to use, with no ads and no in-app purchases.
                         </p>
 
