@@ -1413,6 +1413,13 @@ input[type="number"] {
     gap: 10px;
 }
 
+.about-support-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
 .about-support-button {
     min-height: 52px;
     border-radius: var(--radius-md);
@@ -1627,6 +1634,11 @@ input[type="number"] {
 
     .about-support {
         justify-items: start;
+    }
+
+    .about-support-actions {
+        width: 100%;
+        flex-direction: column;
     }
 
     .about-support-button {

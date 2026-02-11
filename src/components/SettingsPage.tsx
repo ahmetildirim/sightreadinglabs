@@ -1,5 +1,5 @@
 import type { MidiInputOption, ThemeMode } from "../types";
-import { APP_VERSION } from "../config/appMeta";
+import { APP_NAME, APP_RELEASE_STAGE, APP_VERSION } from "../config/appMeta";
 import AppTopBar from "./AppTopBar";
 import BackButton from "./BackButton";
 
@@ -123,9 +123,9 @@ export default function SettingsPage({
                         <div className="settings-bottom-row">
                             <button type="button" className="settings-about-button" onClick={onOpenAbout}>
                                 <span className="material-symbols-outlined">info</span>
-                                <span>About 88keys</span>
+                                <span>About {APP_NAME} ({APP_RELEASE_STAGE})</span>
                             </button>
-                            <span>Version {APP_VERSION}</span>
+                            <span>Version {APP_VERSION} ({APP_RELEASE_STAGE})</span>
                         </div>
                     </section>
 

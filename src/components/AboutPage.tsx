@@ -1,6 +1,6 @@
 import AppTopBar from "./AppTopBar";
 import BackButton from "./BackButton";
-import { APP_VERSION } from "../config/appMeta";
+import { APP_NAME, APP_RELEASE_STAGE, APP_VERSION } from "../config/appMeta";
 
 interface AboutPageProps {
     onBack: () => void;
@@ -22,38 +22,67 @@ export default function AboutPage({ onBack }: AboutPageProps) {
                             <span className="material-symbols-outlined">piano</span>
                         </div>
 
-                        <h1>About 88keys</h1>
+                        <h1>About {APP_NAME} ({APP_RELEASE_STAGE})</h1>
                         <div className="about-divider" aria-hidden />
 
                         <p>
-                            In a world of cluttered interfaces and gamified distractions, finding
-                            focus at the piano can be challenging. <strong>88keys</strong> was built
-                            to strip away the noise.
+                            As a new piano student, I struggled to find a sight-reading app that
+                            truly supported beginners. Most tools felt either too complex or not
+                            focused enough on consistent practice. So I built a simple, focused app
+                            designed to make daily sight-reading practice easier and more effective.
                         </p>
 
                         <p>
-                            Our mission is simple: provide a pure, distraction-free environment
-                            dedicated solely to the mastery of sight-reading. We believe precision
-                            in design fosters precision in practice. No badges, no leaderboards.
-                            Just you and the notes.
+                            The app is intentionally minimal. It&apos;s currently in active
+                            development, and new features will be added gradually based on real user
+                            feedback and practical needs.
                         </p>
 
                         <p>
-                            Designed with a minimalist monochrome aesthetic, every pixel serves a
-                            purpose, ensuring your cognitive load is spent on the music, not the
-                            software.
+                            For now, everything works offline. There are no accounts, no profiles,
+                            and no cloud storage - all data stays on your device. The app is
+                            completely free to use, with no ads and no in-app purchases.
                         </p>
 
-                        <div className="about-support">
+                        <p>
+                            If you have suggestions, ideas, or encounter any issues, please{" "}
                             <a
-                                className="about-support-button"
-                                href="https://buymeacoffee.com/ahmetildirim"
+                                href="https://github.com/ahmetildirim/88keys/issues"
                                 target="_blank"
                                 rel="noreferrer"
                             >
-                                <span className="material-symbols-outlined">local_cafe</span>
-                                <span>Buy me a coffee</span>
+                                open an issue on GitHub
                             </a>
+                            . Your feedback directly shapes the direction of this project.
+                        </p>
+
+                        <p>
+                            If you&apos;d like to support ongoing development, you can do so via the
+                            Buy Me a Coffee link. Any support is genuinely appreciated and helps keep
+                            the project improving.
+                        </p>
+
+                        <div className="about-support">
+                            <div className="about-support-actions">
+                                <a
+                                    className="about-support-button"
+                                    href="https://github.com/ahmetildirim/88keys"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    <span className="material-symbols-outlined">code</span>
+                                    <span>GitHub</span>
+                                </a>
+                                <a
+                                    className="about-support-button"
+                                    href="https://buymeacoffee.com/ahmetildirim"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    <span className="material-symbols-outlined">local_cafe</span>
+                                    <span>Buy me a coffee</span>
+                                </a>
+                            </div>
                             <p>Support independent development</p>
                         </div>
                     </section>
@@ -65,8 +94,8 @@ export default function AboutPage({ onBack }: AboutPageProps) {
             </main>
 
             <footer className="about-footer">
-                <p className="mono">v{APP_VERSION}</p>
-                <p>Crafted for pianists. © 2026 88keys.app</p>
+                <p className="mono">v{APP_VERSION} · {APP_RELEASE_STAGE}</p>
+                <p>© 2026 88keys.app</p>
             </footer>
         </div>
     );

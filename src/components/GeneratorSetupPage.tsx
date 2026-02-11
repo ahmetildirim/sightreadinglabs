@@ -1,5 +1,6 @@
 import type { NoteName } from "../generator";
 import { MIN_TOTAL_NOTES, MAX_TOTAL_NOTES } from "../constants";
+import { APP_RELEASE_STAGE } from "../config/appMeta";
 import AppTopBar from "./AppTopBar";
 import KeyStepper from "./KeyStepper";
 
@@ -197,7 +198,9 @@ export default function GeneratorSetupPage({
                 </div>
             </main>
 
-            <footer className="setup-footer">© {new Date().getFullYear()} 88keys.app | Minimalist sight-reading trainer.</footer>
+            <footer className="setup-footer">
+                © {new Date().getFullYear()} 88keys.app {APP_RELEASE_STAGE} | Minimalist sight-reading trainer.
+            </footer>
         </div>
     );
 }
