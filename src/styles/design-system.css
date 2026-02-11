@@ -1294,10 +1294,42 @@ input[type="number"] {
     border-top: 1px solid var(--line);
     background: var(--surface-2);
     padding: 12px clamp(14px, 2.4vw, 24px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
     font-size: 0.77rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--text-3);
+}
+
+.settings-about-button {
+    min-height: 32px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--surface-1);
+    color: var(--text-2);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 10px;
+    font-size: 0.71rem;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    font-weight: 700;
+    transition: border-color 0.14s ease, background-color 0.14s ease, color 0.14s ease;
+}
+
+.settings-about-button:hover {
+    border-color: var(--line-strong);
+    background: var(--surface-3);
+    color: var(--text-1);
+}
+
+.settings-about-button .material-symbols-outlined {
+    font-size: 16px;
 }
 
 .settings-handle {
@@ -1306,6 +1338,172 @@ input[type="number"] {
     border-radius: var(--radius-pill);
     margin: 0 auto;
     background: var(--line-strong);
+}
+
+.about-page {
+    --about-accent: #2f6fd5;
+}
+
+.about-main {
+    flex: 1;
+    padding: clamp(20px, 4vw, 52px) 16px 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.about-wrapper {
+    width: min(100%, 980px);
+    display: grid;
+    gap: clamp(24px, 4vw, 40px);
+}
+
+.about-content {
+    width: min(100%, 760px);
+    margin: 0 auto;
+    text-align: center;
+    display: grid;
+    justify-items: center;
+    gap: clamp(14px, 2.5vw, 20px);
+}
+
+.about-icon-box {
+    width: 62px;
+    height: 62px;
+    border-radius: 14px;
+    border: 1px solid color-mix(in srgb, var(--about-accent) 30%, var(--line));
+    background: color-mix(in srgb, var(--about-accent) 10%, var(--surface-1));
+    color: var(--about-accent);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.about-icon-box .material-symbols-outlined {
+    font-size: 30px;
+}
+
+.about-content h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+}
+
+.about-divider {
+    width: 76px;
+    height: 4px;
+    border-radius: var(--radius-pill);
+    background: var(--about-accent);
+}
+
+.about-content p {
+    margin: 0;
+    color: var(--text-2);
+    font-size: clamp(1.04rem, 2.2vw, 1.14rem);
+    line-height: 1.78;
+}
+
+.about-content p strong {
+    color: var(--text-1);
+}
+
+.about-support {
+    margin-top: 4px;
+    display: grid;
+    justify-items: center;
+    gap: 10px;
+}
+
+.about-support-button {
+    min-height: 52px;
+    border-radius: var(--radius-md);
+    border: 1px solid color-mix(in srgb, var(--about-accent) 60%, var(--line));
+    color: var(--about-accent);
+    background: var(--surface-1);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 28px;
+    font-size: 1.03rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    transition: transform 0.14s ease, box-shadow 0.14s ease, background-color 0.14s ease;
+}
+
+.about-support-button:hover {
+    background: color-mix(in srgb, var(--about-accent) 10%, var(--surface-1));
+    transform: translateY(-1px);
+    box-shadow: 0 8px 14px color-mix(in srgb, var(--about-accent) 22%, transparent);
+}
+
+.about-support-button .material-symbols-outlined {
+    font-size: 20px;
+}
+
+.about-support p {
+    margin: 0;
+    font-size: 0.72rem;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+    color: var(--text-3);
+}
+
+.about-hero {
+    margin: 0;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--surface-1);
+    box-shadow: var(--shadow-soft);
+}
+
+.about-hero-image {
+    position: relative;
+    width: 100%;
+    height: clamp(190px, 30vw, 350px);
+    background:
+        linear-gradient(122deg, #20242a 0%, #40454f 34%, #808791 54%, #d5d9df 72%, #f2f4f8 100%);
+}
+
+.about-hero-image::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        repeating-linear-gradient(90deg,
+            transparent 0 54px,
+            rgba(0, 0, 0, 0.65) 54px 74px,
+            transparent 74px 132px);
+    transform: perspective(540px) rotateX(22deg) translateY(-28%);
+    transform-origin: top;
+    opacity: 0.78;
+    mix-blend-mode: multiply;
+}
+
+.about-hero-image::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(120% 120% at 0% 100%, rgba(255, 255, 255, 0.35) 0%, transparent 50%),
+        linear-gradient(180deg, transparent 42%, rgba(243, 242, 238, 0.94) 93%, rgba(243, 242, 238, 1) 100%);
+}
+
+.about-footer {
+    border-top: 1px solid var(--line);
+    padding: 24px 16px 28px;
+    text-align: center;
+    display: grid;
+    gap: 8px;
+    color: var(--text-3);
+    font-size: 0.82rem;
+}
+
+.about-footer .mono {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
 
 .dark .app-top-bar {
@@ -1324,6 +1522,29 @@ input[type="number"] {
 .dark .result-secondary-button:hover,
 .dark .back-button:hover {
     color: var(--accent-contrast);
+}
+
+.dark .about-content p {
+    color: var(--text-2);
+}
+
+.dark .about-content p strong {
+    color: var(--text-1);
+}
+
+.dark .about-support-button {
+    border-color: color-mix(in srgb, var(--about-accent) 55%, var(--line));
+    background: var(--surface-2);
+}
+
+.dark .about-support-button:hover {
+    background: color-mix(in srgb, var(--about-accent) 20%, var(--surface-2));
+}
+
+.dark .about-hero-image::after {
+    background:
+        radial-gradient(140% 120% at 0% 100%, rgba(8, 8, 8, 0.3) 0%, transparent 48%),
+        linear-gradient(180deg, transparent 44%, rgba(8, 8, 8, 0.66) 92%, rgba(8, 8, 8, 0.78) 100%);
 }
 
 .dark .start-session-button,
@@ -1392,6 +1613,27 @@ input[type="number"] {
     .setup-intro,
     .settings-intro,
     .result-intro {
+        text-align: left;
+    }
+
+    .about-content {
+        text-align: left;
+        justify-items: start;
+    }
+
+    .about-divider {
+        margin-left: 0;
+    }
+
+    .about-support {
+        justify-items: start;
+    }
+
+    .about-support-button {
+        width: 100%;
+    }
+
+    .about-footer {
         text-align: left;
     }
 

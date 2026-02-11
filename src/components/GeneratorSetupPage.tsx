@@ -197,7 +197,7 @@ export default function GeneratorSetupPage({
                 </div>
             </main>
 
-            <footer className="setup-footer">© 2026 88keys.app. Minimalist sight-reading trainer.</footer>
+            <footer className="setup-footer">© {new Date().getFullYear()} 88keys.app | Minimalist sight-reading trainer.</footer>
         </div>
     );
 }

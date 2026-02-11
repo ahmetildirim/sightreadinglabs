@@ -1,5 +1,7 @@
 import type { MidiInputOption, ThemeMode } from "../types";
+import { APP_VERSION } from "../config/appMeta";
 import AppTopBar from "./AppTopBar";
+import BackButton from "./BackButton";
 
 interface SettingsPageProps {
     themeMode: ThemeMode;
@@ -8,6 +10,7 @@ interface SettingsPageProps {
     midiConnected: boolean;
     onThemeModeChange: (value: ThemeMode) => void;
     onMidiDeviceChange: (value: string) => void;
+    onOpenAbout: () => void;
     onBack: () => void;
 }
 
@@ -18,16 +21,14 @@ export default function SettingsPage({
     midiConnected,
     onThemeModeChange,
     onMidiDeviceChange,
+    onOpenAbout,
     onBack,
 }: SettingsPageProps) {
     return (
         <div className="app-page settings-page">
             <AppTopBar
                 rightSlot={
-                    <button type="button" className="back-button" onClick={onBack}>
-                        <span className="material-symbols-outlined">chevron_left</span>
-                        <span>Back</span>
-                    </button>
+                    <BackButton onClick={onBack} />
                 }
             />
 
@@ -120,7 +121,11 @@ export default function SettingsPage({
                         </div>
 
                         <div className="settings-bottom-row">
-                            <span>Version 2.0.0 (Monochrome Precision)</span>
+                            <button type="button" className="settings-about-button" onClick={onOpenAbout}>
+                                <span className="material-symbols-outlined">info</span>
+                                <span>About 88keys</span>
+                            </button>
+                            <span>Version {APP_VERSION}</span>
                         </div>
                     </section>
 

@@ -5,6 +5,7 @@ import GeneratorSetupPage from "./components/GeneratorSetupPage";
 import PracticePlayerPage from "./components/PracticePlayerPage";
 import SessionResultPage from "./components/SessionResultPage";
 import SettingsPage from "./components/SettingsPage";
+import AboutPage from "./components/AboutPage";
 import { CURSOR_STYLES } from "./config/presets";
 import {
   DEFAULT_MIN_NOTE,
@@ -309,6 +310,14 @@ export default function App() {
     setPage(settingsReturnPage);
   }, [settingsReturnPage]);
 
+  const openAbout = useCallback(() => {
+    setPage("about");
+  }, []);
+
+  const closeAbout = useCallback(() => {
+    setPage("settings");
+  }, []);
+
   // Render
   if (page === "setup") {
     return (
@@ -377,6 +386,10 @@ export default function App() {
     );
   }
 
+  if (page === "about") {
+    return <AboutPage onBack={closeAbout} />;
+  }
+
   return (
     <SettingsPage
       themeMode={themeMode}
@@ -385,6 +398,7 @@ export default function App() {
       midiConnected={midiConnected}
       onThemeModeChange={setThemeMode}
       onMidiDeviceChange={setSelectedDevice}
+      onOpenAbout={openAbout}
       onBack={closeSettings}
     />
   );
