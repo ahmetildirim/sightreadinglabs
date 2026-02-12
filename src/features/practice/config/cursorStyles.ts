@@ -18,6 +18,6 @@ interface CursorStyle {
  */
 export const CURSOR_STYLES: Readonly<Record<CursorFeedback, CursorStyle>> = {
     idle: { color: "#6daaf5", alpha: 0.60 },
-    correct: { color: "#0ad053", alpha: 0.80 },
+    correct: { color: "#0ad053", alpha: 0.60 },
     wrong: { color: "#f76666", alpha: 0.45 },
 };
