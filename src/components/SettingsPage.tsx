@@ -44,37 +44,6 @@ export default function SettingsPage({
                         <div className="settings-section">
                             <div className="settings-title">
                                 <div className="settings-icon-box">
-                                    <span className="material-symbols-outlined">palette</span>
-                                </div>
-                                <h2>Appearance</h2>
-                            </div>
-
-                            <div className="toggle-row">
-                                <div>
-                                    <h3>Theme</h3>
-                                    <p>Choose light, dark, or follow your system setting.</p>
-                                </div>
-                                <div className="select-wrap theme-select-wrap">
-                                    <select
-                                        id="theme-mode-select"
-                                        value={themeMode}
-                                        onChange={(event) =>
-                                            onThemeModeChange(event.target.value as ThemeMode)
-                                        }
-                                        aria-label="Theme mode"
-                                    >
-                                        <option value="light">Light</option>
-                                        <option value="dark">Dark</option>
-                                        <option value="system">System</option>
-                                    </select>
-                                    <span className="material-symbols-outlined">expand_more</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="settings-section">
-                            <div className="settings-title">
-                                <div className="settings-icon-box">
                                     <span className="material-symbols-outlined">piano</span>
                                 </div>
                                 <h2>MIDI input device</h2>
@@ -117,6 +86,37 @@ export default function SettingsPage({
                                     If your keyboard isn't showing up, try reconnecting the USB cable
                                     or refreshing the page.
                                 </p>
+                            </div>
+                        </div>
+
+                        <div className="settings-section">
+                            <div className="settings-title">
+                                <div className="settings-icon-box">
+                                    <span className="material-symbols-outlined">palette</span>
+                                </div>
+                                <h2>Appearance</h2>
+                            </div>
+
+                            <div className="toggle-row">
+                                <div>
+                                    <h3>Theme</h3>
+                                    <p>Choose light, dark, or follow your system setting.</p>
+                                </div>
+                                <div className="select-wrap theme-select-wrap">
+                                    <select
+                                        id="theme-mode-select"
+                                        value={themeMode}
+                                        onChange={(event) =>
+                                            onThemeModeChange(event.target.value as ThemeMode)
+                                        }
+                                        aria-label="Theme mode"
+                                    >
+                                        <option value="light">Light</option>
+                                        <option value="dark">Dark</option>
+                                        <option value="system">System</option>
+                                    </select>
+                                    <span className="material-symbols-outlined">expand_more</span>
+                                </div>
                             </div>
                         </div>
 

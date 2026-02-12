@@ -6,6 +6,7 @@ import PracticePlayerPage from "./components/PracticePlayerPage";
 import SessionResultPage from "./components/SessionResultPage";
 import SettingsPage from "./components/SettingsPage";
 import AboutPage from "./components/AboutPage";
+import { MOCK_PREVIOUS_SESSIONS } from "./config/mockPreviousSessions";
 import { CURSOR_STYLES } from "./config/presets";
 import {
   DEFAULT_MIN_NOTE,
@@ -20,7 +21,12 @@ import useMidiDevices from "./hooks/useMidiDevices";
 import useMidiInput from "./hooks/useMidiInput";
 import useSightReadingSession from "./hooks/useSightReadingSession";
 import useTimer from "./hooks/useTimer";
-import type { AppPage, CursorFeedback, ReturnPage, ThemeMode } from "./types";
+import type {
+  AppPage,
+  CursorFeedback,
+  ReturnPage,
+  ThemeMode,
+} from "./types";
 import { clamp, formatTime, midiStatusLabel, midiToNoteLabel } from "./utils";
 
 // ---------------------------------------------------------------------------
@@ -57,6 +63,9 @@ export default function App() {
   const [maxNote, setMaxNote] = useState<NoteName>(DEFAULT_MAX_NOTE);
   const [totalNotes, setTotalNotes] = useState(DEFAULT_TOTAL_NOTES);
   const [seed, setSeed] = useState(1);
+  const [activePreviousSessionId, setActivePreviousSessionId] = useState<string | null>(
+    null,
+  );
 
   // Appearance
   const [themeMode, setThemeMode] = useState<ThemeMode>("system");
@@ -254,6 +263,18 @@ export default function App() {
     [minNote, maxNoteIndex],
   );
 
+  const loadPreviousSession = useCallback((sessionId: string) => {
+    const selectedSession = MOCK_PREVIOUS_SESSIONS.find(
+      (session) => session.id === sessionId,
+    );
+    if (!selectedSession) return;
+
+    setMinNote(selectedSession.config.minNote);
+    setMaxNote(selectedSession.config.maxNote);
+    setTotalNotes(clampNoteCount(selectedSession.config.totalNotes));
+    setActivePreviousSessionId(selectedSession.id);
+  }, []);
+
   // Navigation
   const startSession = useCallback(() => {
     setAutoFinishToken(0);
@@ -347,6 +368,9 @@ export default function App() {
         }
         onStartSession={startSession}
         onOpenSettings={() => openSettings("setup")}
+        previousSessions={MOCK_PREVIOUS_SESSIONS}
+        onLoadPreviousSession={loadPreviousSession}
+        activePreviousSessionId={activePreviousSessionId}
       />
     );
   }
