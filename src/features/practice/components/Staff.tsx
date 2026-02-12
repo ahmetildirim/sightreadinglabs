@@ -5,7 +5,7 @@ import {
   useImperativeHandle,
   useRef,
 } from "react";
-import { OpenSheetMusicDisplay } from "opensheetmusicdisplay";
+import type { OpenSheetMusicDisplay } from "opensheetmusicdisplay";
 
 interface StaffProps {
   scoreXml: string;
@@ -23,6 +23,7 @@ export interface StaffHandle {
 }
 
 const SCORE_ZOOM = 1.5;
+type OpenSheetMusicDisplayCtor = typeof import("opensheetmusicdisplay")["OpenSheetMusicDisplay"];
 
 const Staff = forwardRef<StaffHandle, StaffProps>(function Staff(
   { scoreXml, cursorStyle },
@@ -30,6 +31,7 @@ const Staff = forwardRef<StaffHandle, StaffProps>(function Staff(
 ) {
   const containerRef = useRef<HTMLDivElement>(null);
   const osmdRef = useRef<OpenSheetMusicDisplay | null>(null);
+  const osmdCtorRef = useRef<OpenSheetMusicDisplayCtor | null>(null);
 
   const cursorStyleRef = useRef(cursorStyle);
   cursorStyleRef.current = cursorStyle;
@@ -89,11 +91,17 @@ const Staff = forwardRef<StaffHandle, StaffProps>(function Staff(
     [getScrollContainer],
   );
 
-  const getOrCreateOsmd = useCallback((): OpenSheetMusicDisplay | null => {
+  const getOrCreateOsmd = useCallback(async (): Promise<OpenSheetMusicDisplay | null> => {
     if (osmdRef.current) return osmdRef.current;
     if (!containerRef.current) return null;
 
-    osmdRef.current = new OpenSheetMusicDisplay(containerRef.current, {
+    if (!osmdCtorRef.current) {
+      const osmdModule = await import("opensheetmusicdisplay");
+      osmdCtorRef.current = osmdModule.OpenSheetMusicDisplay;
+    }
+
+    const OpenSheetMusicDisplayClass = osmdCtorRef.current;
+    osmdRef.current = new OpenSheetMusicDisplayClass(containerRef.current, {
       drawMetronomeMarks: false,
       drawTitle: false,
       drawPartNames: false,
@@ -125,12 +133,12 @@ const Staff = forwardRef<StaffHandle, StaffProps>(function Staff(
   }), [getScrollContainer, scrollCursorIntoView]);
 
   useEffect(() => {
-    const osmd = getOrCreateOsmd();
-    if (!osmd) return;
-
     let cancelled = false;
 
     (async () => {
+      const osmd = await getOrCreateOsmd();
+      if (!osmd || cancelled) return;
+
       await osmd.load(scoreXml);
       if (cancelled) return;
 

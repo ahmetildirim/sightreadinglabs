@@ -117,14 +117,15 @@ export default function App() {
   useEffect(() => {
     let mounted = true;
 
+    const baseTime = Date.now();
     void seedTrainings(
-      TRAININGS.map((t) => ({
+      TRAININGS.map((t, index) => ({
         id: t.id,
         title: t.title,
         minNote: t.minNote,
         maxNote: t.maxNote,
         totalNotes: t.totalNotes,
-        createdAt: Date.now(),
+        createdAt: baseTime - index,
       })),
     )
       .then(() => Promise.all([loadSettings(), listSessionRuns(), listCustomTrainings()]))
@@ -508,105 +509,105 @@ export default function App() {
   return (
     <Suspense fallback={<div className="app-page setup-page" />}>
       <Routes>
-      <Route
-        path={APP_ROUTES.setup}
-        element={
-          <SetupPage
-            midiConnected={midiConnected}
-            midiLabel={midiLabel}
-            minNote={minNote}
-            maxNote={maxNote}
-            totalNotes={totalNotes}
-            rangeSummary={rangeSummary}
-            selectedRangeLeftPercent={selectedRangeLeftPercent}
-            selectedRangeWidthPercent={selectedRangeWidthPercent}
-            onDecreaseMinNote={() => updateMinNoteByStep(-1)}
-            onIncreaseMinNote={() => updateMinNoteByStep(1)}
-            onDecreaseMaxNote={() => updateMaxNoteByStep(-1)}
-            onIncreaseMaxNote={() => updateMaxNoteByStep(1)}
-            onDecreaseNotes={() =>
-              setTotalNotes((value) => clampNoteCount(value - 1))
-            }
-            onIncreaseNotes={() =>
-              setTotalNotes((value) => clampNoteCount(value + 1))
-            }
-            onNoteCountInput={(value) =>
-              setTotalNotes(
-                Number.isNaN(value) ? DEFAULT_TOTAL_NOTES : clampNoteCount(value),
-              )
-            }
-            onStartSession={startSession}
-            onOpenSettings={() => openSettings("setup")}
-            previousSessions={previousSessions}
-            onLoadPreviousSession={loadPreviousSession}
-            trainings={trainings}
-            onLoadTraining={loadTraining}
-            onSaveTraining={saveTraining}
-            onDeleteTraining={removeTraining}
-          />
-        }
-      />
-
-      <Route
-        path={APP_ROUTES.practice}
-        element={
-          <PracticePage
-            staffRef={staffRef}
-            scoreXml={score.xml}
-            cursorStyle={cursorStyle}
-            rangeLabel={`${minNote} - ${maxNote}`}
-            totalNotes={totalNotes}
-            completedNotes={completedNotes}
-            accuracy={accuracy}
-            elapsedTimeLabel={formatTime(elapsedSeconds)}
-            timerRunning={timerRunning}
-            onToggleTimer={toggleTimer}
-            missedMessage={missedMessage}
-            onOpenSettings={() => openSettings("practice")}
-            onFinish={finishSession}
-          />
-        }
-      />
-
-      <Route
-        path={APP_ROUTES.results}
-        element={
-          sessionResult ? (
-            <ResultsPage
-              accuracy={sessionResult.accuracy}
-              speedNpm={sessionResult.speedNpm}
-              speedDelta={sessionResult.speedDelta}
-              improvements={sessionResult.improvements}
-              durationLabel={formatTime(sessionResult.durationSeconds)}
-              sessionId={sessionResult.sessionId}
-              onNewSetup={newSetupFromResults}
-              onTryAgain={retrySession}
+        <Route
+          path={APP_ROUTES.setup}
+          element={
+            <SetupPage
+              midiConnected={midiConnected}
+              midiLabel={midiLabel}
+              minNote={minNote}
+              maxNote={maxNote}
+              totalNotes={totalNotes}
+              rangeSummary={rangeSummary}
+              selectedRangeLeftPercent={selectedRangeLeftPercent}
+              selectedRangeWidthPercent={selectedRangeWidthPercent}
+              onDecreaseMinNote={() => updateMinNoteByStep(-1)}
+              onIncreaseMinNote={() => updateMinNoteByStep(1)}
+              onDecreaseMaxNote={() => updateMaxNoteByStep(-1)}
+              onIncreaseMaxNote={() => updateMaxNoteByStep(1)}
+              onDecreaseNotes={() =>
+                setTotalNotes((value) => clampNoteCount(value - 1))
+              }
+              onIncreaseNotes={() =>
+                setTotalNotes((value) => clampNoteCount(value + 1))
+              }
+              onNoteCountInput={(value) =>
+                setTotalNotes(
+                  Number.isNaN(value) ? DEFAULT_TOTAL_NOTES : clampNoteCount(value),
+                )
+              }
+              onStartSession={startSession}
+              onOpenSettings={() => openSettings("setup")}
+              previousSessions={previousSessions}
+              onLoadPreviousSession={loadPreviousSession}
+              trainings={trainings}
+              onLoadTraining={loadTraining}
+              onSaveTraining={saveTraining}
+              onDeleteTraining={removeTraining}
             />
-          ) : (
-            <Navigate to={APP_ROUTES.setup} replace />
-          )
-        }
-      />
+          }
+        />
 
-      <Route
-        path={APP_ROUTES.settings}
-        element={
-          <SettingsPage
-            themeMode={themeMode}
-            midiInputs={midiInputs}
-            midiDevice={selectedDevice}
-            midiConnected={midiConnected}
-            onThemeModeChange={setThemeMode}
-            onMidiDeviceChange={setSelectedDevice}
-            onOpenAbout={openAbout}
-            onBack={closeSettings}
-          />
-        }
-      />
+        <Route
+          path={APP_ROUTES.practice}
+          element={
+            <PracticePage
+              staffRef={staffRef}
+              scoreXml={score.xml}
+              cursorStyle={cursorStyle}
+              rangeLabel={`${minNote} - ${maxNote}`}
+              totalNotes={totalNotes}
+              completedNotes={completedNotes}
+              accuracy={accuracy}
+              elapsedTimeLabel={formatTime(elapsedSeconds)}
+              timerRunning={timerRunning}
+              onToggleTimer={toggleTimer}
+              missedMessage={missedMessage}
+              onOpenSettings={() => openSettings("practice")}
+              onFinish={finishSession}
+            />
+          }
+        />
 
-      <Route path={APP_ROUTES.about} element={<AboutPage onBack={closeAbout} />} />
-      <Route path="/" element={<Navigate to={APP_ROUTES.setup} replace />} />
-      <Route path="*" element={<Navigate to={APP_ROUTES.setup} replace />} />
+        <Route
+          path={APP_ROUTES.results}
+          element={
+            sessionResult ? (
+              <ResultsPage
+                accuracy={sessionResult.accuracy}
+                speedNpm={sessionResult.speedNpm}
+                speedDelta={sessionResult.speedDelta}
+                improvements={sessionResult.improvements}
+                durationLabel={formatTime(sessionResult.durationSeconds)}
+                sessionId={sessionResult.sessionId}
+                onNewSetup={newSetupFromResults}
+                onTryAgain={retrySession}
+              />
+            ) : (
+              <Navigate to={APP_ROUTES.setup} replace />
+            )
+          }
+        />
+
+        <Route
+          path={APP_ROUTES.settings}
+          element={
+            <SettingsPage
+              themeMode={themeMode}
+              midiInputs={midiInputs}
+              midiDevice={selectedDevice}
+              midiConnected={midiConnected}
+              onThemeModeChange={setThemeMode}
+              onMidiDeviceChange={setSelectedDevice}
+              onOpenAbout={openAbout}
+              onBack={closeSettings}
+            />
+          }
+        />
+
+        <Route path={APP_ROUTES.about} element={<AboutPage onBack={closeAbout} />} />
+        <Route path="/" element={<Navigate to={APP_ROUTES.setup} replace />} />
+        <Route path="*" element={<Navigate to={APP_ROUTES.setup} replace />} />
       </Routes>
     </Suspense>
   );
