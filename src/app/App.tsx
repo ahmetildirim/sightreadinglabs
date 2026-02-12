@@ -1,7 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
-import AboutPage from "../pages/About/AboutPage";
 import {
   midiStatusLabel,
   midiToNoteLabel,
@@ -27,10 +26,6 @@ import {
 import { TRAININGS, type Training } from "../features/setup/config/trainings";
 import type { PersistedCustomTraining } from "../shared/storage";
 import { NOTE_NAMES, generateScore, type NoteName } from "../entities/score";
-import PracticePage from "../pages/Practice/PracticePage";
-import ResultsPage from "../pages/Results/ResultsPage";
-import SettingsPage from "../pages/Settings/SettingsPage";
-import SetupPage from "../pages/Setup/SetupPage";
 import { APP_ROUTES } from "./routes";
 import type { AppPage, ReturnPage } from "./routes/types";
 import { clamp, formatTime } from "../shared/utils";
@@ -46,6 +41,12 @@ import {
   toPreviousSessionItem,
   type PersistedSessionRun,
 } from "../shared/storage";
+
+const AboutPage = lazy(() => import("../pages/About/AboutPage"));
+const PracticePage = lazy(() => import("../pages/Practice/PracticePage"));
+const ResultsPage = lazy(() => import("../pages/Results/ResultsPage"));
+const SettingsPage = lazy(() => import("../pages/Settings/SettingsPage"));
+const SetupPage = lazy(() => import("../pages/Setup/SetupPage"));
 
 function clampNoteCount(value: number): number {
   return clamp(value, MIN_TOTAL_NOTES, MAX_TOTAL_NOTES);
@@ -109,7 +110,7 @@ export default function App() {
   const [missedNoteCounts, setMissedNoteCounts] = useState<Record<string, number>>({});
   const [sessionResult, setSessionResult] = useState<SessionResult | null>(null);
 
-  const timer = useTimer();
+  const { elapsedMs, isRunning: timerRunning, start: startTimer, stop: stopTimer, toggle: toggleTimer, reset: resetTimer } = useTimer();
   const { midiInputs, selectedDevice, setSelectedDevice } = useMidiDevices();
   const { reset, handleNoteOn, handleNoteOff } = useSightReadingSession();
 
@@ -246,17 +247,17 @@ export default function App() {
     setCorrectAttempts(0);
     setAutoFinishToken(0);
     setMissedNoteCounts({});
-    timer.reset();
+    resetTimer();
     clearMissedMessage();
     staffRef.current?.resetCursor();
-  }, [reset, score.expectedNotes, clearMissedMessage, timer.reset]);
+  }, [reset, score.expectedNotes, clearMissedMessage, resetTimer]);
 
   const onNoteOn = useCallback(
     (note: number) => {
       if (page !== "practice") return;
 
-      if (!timer.isRunning) {
-        timer.start();
+      if (!timerRunning) {
+        startTimer();
       }
 
       const result = handleNoteOn(note);
@@ -278,7 +279,7 @@ export default function App() {
       }));
       showMissedMessage(note);
     },
-    [handleNoteOn, showMissedMessage, page, timer.isRunning, timer.start],
+    [handleNoteOn, showMissedMessage, page, timerRunning, startTimer],
   );
 
   const onNoteOff = useCallback(
@@ -303,7 +304,12 @@ export default function App() {
     setCursorFeedback("idle");
   }, [page]);
 
-  const midiStatus = useMidiInput({ onNoteOn, onNoteOff, onAllNotesOff });
+  const midiStatus = useMidiInput({
+    selectedDeviceId: selectedDevice,
+    onNoteOn,
+    onNoteOff,
+    onAllNotesOff,
+  });
 
   const midiConnected = midiStatus === "MIDI: connected";
   const midiLabel = midiStatusLabel(midiStatus);
@@ -318,7 +324,7 @@ export default function App() {
 
   const accuracy =
     attempts === 0 ? 100 : Math.round((correctAttempts / attempts) * 100);
-  const elapsedSeconds = Math.floor(timer.elapsedMs / 1000);
+  const elapsedSeconds = Math.floor(elapsedMs / 1000);
 
   const rangeSummary =
     minNote === "A0" && maxNote === "C8"
@@ -405,8 +411,8 @@ export default function App() {
   }, [navigate]);
 
   const finishSession = useCallback(() => {
-    timer.stop();
-    const durationSeconds = Math.floor(timer.elapsedMs / 1000);
+    stopTimer();
+    const durationSeconds = Math.floor(elapsedMs / 1000);
     const speedNpm =
       durationSeconds === 0
         ? 0
@@ -459,7 +465,8 @@ export default function App() {
     missedNoteCounts,
     navigate,
     seed,
-    timer,
+    elapsedMs,
+    stopTimer,
     totalNotes,
   ]);
 
@@ -499,7 +506,8 @@ export default function App() {
   }, [navigate]);
 
   return (
-    <Routes>
+    <Suspense fallback={<div className="app-page setup-page" />}>
+      <Routes>
       <Route
         path={APP_ROUTES.setup}
         element={
@@ -551,8 +559,8 @@ export default function App() {
             completedNotes={completedNotes}
             accuracy={accuracy}
             elapsedTimeLabel={formatTime(elapsedSeconds)}
-            timerRunning={timer.isRunning}
-            onToggleTimer={timer.toggle}
+            timerRunning={timerRunning}
+            onToggleTimer={toggleTimer}
             missedMessage={missedMessage}
             onOpenSettings={() => openSettings("practice")}
             onFinish={finishSession}
@@ -599,6 +607,7 @@ export default function App() {
       <Route path={APP_ROUTES.about} element={<AboutPage onBack={closeAbout} />} />
       <Route path="/" element={<Navigate to={APP_ROUTES.setup} replace />} />
       <Route path="*" element={<Navigate to={APP_ROUTES.setup} replace />} />
-    </Routes>
+      </Routes>
+    </Suspense>
   );
 }
