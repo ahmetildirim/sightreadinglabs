@@ -1,4 +1,4 @@
-import { clamp } from "../../../utils/clamp";
+import { clamp } from "../../../shared/utils/clamp";
 
 const CHROMATIC_NAMES = [
     "C",

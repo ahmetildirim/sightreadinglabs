@@ -1,8 +1,8 @@
-import type { NoteName } from "../../../generator";
-import { APP_RELEASE_STAGE } from "../../ui/config/appMeta";
+import type { NoteName } from "../../../entities/score";
+import { APP_RELEASE_STAGE } from "../../../shared/config/appMeta";
 import { MAX_TOTAL_NOTES, MIN_TOTAL_NOTES } from "../constants";
 import type { PreviousSessionItem } from "../types";
-import AppTopBar from "../../ui/components/AppTopBar";
+import AppTopBar from "../../../shared/ui/components/AppTopBar";
 import KeyStepper from "./KeyStepper";
 
 interface GeneratorSetupPageProps {

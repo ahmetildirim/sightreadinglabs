@@ -1,6 +1,6 @@
-import AppTopBar from "../../ui/components/AppTopBar";
-import BackButton from "../../ui/components/BackButton";
-import { APP_NAME, APP_RELEASE_STAGE, APP_VERSION } from "../../ui/config/appMeta";
+import AppTopBar from "../../../shared/ui/components/AppTopBar";
+import BackButton from "../../../shared/ui/components/BackButton";
+import { APP_NAME, APP_RELEASE_STAGE, APP_VERSION } from "../../../shared/config/appMeta";
 
 interface AboutPageProps {
     onBack: () => void;

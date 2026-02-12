@@ -1,4 +1,4 @@
-import type { NoteName } from "../../generator";
+import type { NoteName } from "../../entities/score";
 
 export const MIN_TOTAL_NOTES = 10;
 export const MAX_TOTAL_NOTES = 5000;

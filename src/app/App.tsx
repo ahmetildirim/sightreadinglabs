@@ -1,35 +1,35 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { AboutPage } from "./features/about";
+import AboutPage from "../pages/About/AboutPage";
 import {
   midiStatusLabel,
   midiToNoteLabel,
   useMidiDevices,
   useMidiInput,
-} from "./features/midi";
-import { MISSED_MESSAGE_TIMEOUT_MS } from "./features/practice/constants";
-import { CURSOR_STYLES } from "./features/practice/config/cursorStyles";
-import type { CursorFeedback } from "./features/practice/types";
+} from "../features/midi";
+import { MISSED_MESSAGE_TIMEOUT_MS } from "../features/practice/constants";
+import { CURSOR_STYLES } from "../features/practice/config/cursorStyles";
+import type { CursorFeedback } from "../features/practice/types";
 import {
-  PracticePlayerPage,
   type StaffHandle,
-} from "./features/practice";
-import { SessionResultPage } from "./features/results";
-import { useSightReadingSession, useTimer } from "./features/session";
-import { SettingsPage } from "./features/settings";
-import type { ThemeMode } from "./features/settings/types";
-import { MOCK_PREVIOUS_SESSIONS } from "./features/setup/config/mockPreviousSessions";
+} from "../features/practice";
+import { useSightReadingSession, useTimer } from "../features/session";
+import type { ThemeMode } from "../features/settings/types";
+import { MOCK_PREVIOUS_SESSIONS } from "../features/setup/config/mockPreviousSessions";
 import {
   DEFAULT_MAX_NOTE,
   DEFAULT_MIN_NOTE,
   DEFAULT_TOTAL_NOTES,
   MAX_TOTAL_NOTES,
   MIN_TOTAL_NOTES,
-} from "./features/setup/constants";
-import { GeneratorSetupPage } from "./features/setup";
-import { NOTE_NAMES, generateScore, type NoteName } from "./generator";
-import type { AppPage, ReturnPage } from "./app/types";
-import { clamp, formatTime } from "./utils";
+} from "../features/setup/constants";
+import { NOTE_NAMES, generateScore, type NoteName } from "../entities/score";
+import PracticePage from "../pages/Practice/PracticePage";
+import ResultsPage from "../pages/Results/ResultsPage";
+import SettingsPage from "../pages/Settings/SettingsPage";
+import SetupPage from "../pages/Setup/SetupPage";
+import type { AppPage, ReturnPage } from "./routes/types";
+import { clamp, formatTime } from "../shared/utils";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -344,7 +344,7 @@ export default function App() {
   // Render
   if (page === "setup") {
     return (
-      <GeneratorSetupPage
+      <SetupPage
         midiConnected={midiConnected}
         midiLabel={midiLabel}
         minNote={minNote}
@@ -379,7 +379,7 @@ export default function App() {
 
   if (page === "practice") {
     return (
-      <PracticePlayerPage
+      <PracticePage
         staffRef={staffRef}
         scoreXml={score.xml}
         cursorStyle={cursorStyle}
@@ -399,7 +399,7 @@ export default function App() {
 
   if (page === "results" && sessionResult) {
     return (
-      <SessionResultPage
+      <ResultsPage
         accuracy={sessionResult.accuracy}
         speedNpm={sessionResult.speedNpm}
         speedDelta={sessionResult.speedDelta}

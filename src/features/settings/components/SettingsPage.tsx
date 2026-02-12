@@ -1,8 +1,8 @@
 import type { MidiInputOption } from "../../midi/types";
-import { APP_NAME, APP_RELEASE_STAGE, APP_VERSION } from "../../ui/config/appMeta";
+import { APP_NAME, APP_RELEASE_STAGE, APP_VERSION } from "../../../shared/config/appMeta";
 import type { ThemeMode } from "../types";
-import AppTopBar from "../../ui/components/AppTopBar";
-import BackButton from "../../ui/components/BackButton";
+import AppTopBar from "../../../shared/ui/components/AppTopBar";
+import BackButton from "../../../shared/ui/components/BackButton";
 
 interface SettingsPageProps {
     themeMode: ThemeMode;

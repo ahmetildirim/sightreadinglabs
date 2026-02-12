@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { APP_NAME, APP_RELEASE_STAGE } from "../config/appMeta";
+import { APP_NAME, APP_RELEASE_STAGE } from "../../config/appMeta";
 
 interface AppTopBarProps {
     rightSlot?: ReactNode;

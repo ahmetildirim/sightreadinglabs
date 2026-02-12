@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import AppTopBar from "../../ui/components/AppTopBar";
+import AppTopBar from "../../../shared/ui/components/AppTopBar";
 
 type ImprovementItem = {
     note: string;
