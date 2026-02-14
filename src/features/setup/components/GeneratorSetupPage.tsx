@@ -69,6 +69,102 @@ export default function GeneratorSetupPage({
         setShowSaveForm(false);
     };
 
+    const renderTrainingsPanelContent = () => (
+        <>
+            <div className="section-head">
+                <div>
+                    <p className="section-kicker">Quick start</p>
+                    <h2>Trainings</h2>
+                </div>
+            </div>
+
+            {trainings.length === 0 ? (
+                <p className="trainings-empty">No trainings yet.</p>
+            ) : (
+                <ul className="trainings-list">
+                    {trainings.map((training) => (
+                        <li
+                            key={training.id}
+                            className="training-item"
+                        >
+                            <div className="training-meta">
+                                <h3>{training.title}</h3>
+                                <p className="mono">
+                                    {training.minNote} – {training.maxNote} · {training.totalNotes} notes
+                                </p>
+                            </div>
+
+                            <div className="training-actions">
+                                <button
+                                    type="button"
+                                    className="training-load-button"
+                                    onClick={() => onLoadTraining(training.id)}
+                                    aria-label={`Load training ${training.title}`}
+                                >
+                                    Load
+                                </button>
+                                <button
+                                    type="button"
+                                    className="training-delete-button"
+                                    onClick={() => onDeleteTraining(training.id)}
+                                    aria-label={`Delete training ${training.title}`}
+                                >
+                                    <span className="material-symbols-outlined">delete</span>
+                                </button>
+                            </div>
+                        </li>
+                    ))}
+                </ul>
+            )}
+        </>
+    );
+
+    const renderPreviousSessionsPanelContent = () => (
+        <>
+            <div className="section-head">
+                <div>
+                    <p className="section-kicker">History</p>
+                    <h2>Previous sessions</h2>
+                </div>
+            </div>
+
+            {previousSessions.length === 0 ? (
+                <p className="previous-sessions-empty">No previous sessions yet.</p>
+            ) : (
+                <ul className="previous-sessions-list">
+                    {previousSessions.map((session) => {
+                        const range = `${session.config.minNote} - ${session.config.maxNote}`;
+
+                        return (
+                            <li
+                                key={session.id}
+                                className="previous-session-item"
+                            >
+                                <div className="previous-session-meta">
+                                    <p>{session.createdAtLabel}</p>
+                                    <p className="mono">
+                                        {session.durationLabel} · {session.accuracy}%
+                                    </p>
+                                    <p className="mono">{range}</p>
+                                    <p className="mono">{session.config.totalNotes} notes</p>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    className="previous-session-load-button"
+                                    onClick={() => onLoadPreviousSession(session.id)}
+                                    aria-label={`Load session from ${session.createdAtLabel}`}
+                                >
+                                    Load
+                                </button>
+                            </li>
+                        );
+                    })}
+                </ul>
+            )}
+        </>
+    );
+
     return (
         <div className="app-page setup-page">
             <AppTopBar
@@ -103,52 +199,34 @@ export default function GeneratorSetupPage({
 
                     <div className="setup-content">
                         <aside className="setup-side-panel trainings-panel">
-                            <div className="section-head">
-                                <div>
-                                    <p className="section-kicker">Quick start</p>
-                                    <h2>Trainings</h2>
-                                </div>
-                            </div>
-
-                            {trainings.length === 0 ? (
-                                <p className="trainings-empty">No trainings yet.</p>
-                            ) : (
-                                <ul className="trainings-list">
-                                    {trainings.map((training) => (
-                                        <li
-                                            key={training.id}
-                                            className="training-item"
-                                        >
-                                            <div className="training-meta">
-                                                <h3>{training.title}</h3>
-                                                <p className="mono">
-                                                    {training.minNote} – {training.maxNote} · {training.totalNotes} notes
-                                                </p>
-                                            </div>
-
-                                            <div className="training-actions">
-                                                <button
-                                                    type="button"
-                                                    className="training-load-button"
-                                                    onClick={() => onLoadTraining(training.id)}
-                                                    aria-label={`Load training ${training.title}`}
-                                                >
-                                                    Load
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    className="training-delete-button"
-                                                    onClick={() => onDeleteTraining(training.id)}
-                                                    aria-label={`Delete training ${training.title}`}
-                                                >
-                                                    <span className="material-symbols-outlined">delete</span>
-                                                </button>
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
+                            {renderTrainingsPanelContent()}
                         </aside>
+
+                        <div className="setup-mobile-sections">
+                            <details className="setup-mobile-section">
+                                <summary className="setup-mobile-section-summary">
+                                    <span>Quick start</span>
+                                    <span className="material-symbols-outlined" aria-hidden>
+                                        expand_more
+                                    </span>
+                                </summary>
+                                <div className="setup-side-panel trainings-panel setup-mobile-section-panel">
+                                    {renderTrainingsPanelContent()}
+                                </div>
+                            </details>
+
+                            <details className="setup-mobile-section">
+                                <summary className="setup-mobile-section-summary">
+                                    <span>History</span>
+                                    <span className="material-symbols-outlined" aria-hidden>
+                                        expand_more
+                                    </span>
+                                </summary>
+                                <div className="setup-side-panel previous-sessions setup-mobile-section-panel">
+                                    {renderPreviousSessionsPanelContent()}
+                                </div>
+                            </details>
+                        </div>
 
                         <section className="setup-card">
                             <div className="setup-main-panel">
@@ -313,47 +391,7 @@ export default function GeneratorSetupPage({
                         </section>
 
                         <aside className="setup-side-panel previous-sessions">
-                            <div className="section-head">
-                                <div>
-                                    <p className="section-kicker">History</p>
-                                    <h2>Previous sessions</h2>
-                                </div>
-                            </div>
-
-                            {previousSessions.length === 0 ? (
-                                <p className="previous-sessions-empty">No previous sessions yet.</p>
-                            ) : (
-                                <ul className="previous-sessions-list">
-                                    {previousSessions.map((session) => {
-                                        const range = `${session.config.minNote} - ${session.config.maxNote}`;
-
-                                        return (
-                                            <li
-                                                key={session.id}
-                                                className="previous-session-item"
-                                            >
-                                                <div className="previous-session-meta">
-                                                    <p>{session.createdAtLabel}</p>
-                                                    <p className="mono">
-                                                        {session.durationLabel} · {session.accuracy}%
-                                                    </p>
-                                                    <p className="mono">{range}</p>
-                                                    <p className="mono">{session.config.totalNotes} notes</p>
-                                                </div>
-
-                                                <button
-                                                    type="button"
-                                                    className="previous-session-load-button"
-                                                    onClick={() => onLoadPreviousSession(session.id)}
-                                                    aria-label={`Load session from ${session.createdAtLabel}`}
-                                                >
-                                                    Load
-                                                </button>
-                                            </li>
-                                        );
-                                    })}
-                                </ul>
-                            )}
+                            {renderPreviousSessionsPanelContent()}
                         </aside>
                     </div>
                 </div>

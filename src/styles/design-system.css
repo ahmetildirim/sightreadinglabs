@@ -323,6 +323,51 @@ input[type="number"] {
     height: min(700px, calc(100vh - 220px));
 }
 
+.setup-mobile-sections {
+    display: none;
+}
+
+.setup-mobile-section {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    background: var(--surface-2);
+    overflow: hidden;
+}
+
+.setup-mobile-section-summary {
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    cursor: pointer;
+    list-style: none;
+    font-weight: 600;
+    color: var(--text-1);
+}
+
+.setup-mobile-section-summary::-webkit-details-marker {
+    display: none;
+}
+
+.setup-mobile-section-summary::marker {
+    display: none;
+}
+
+.setup-mobile-section-summary .material-symbols-outlined {
+    transition: transform 0.16s ease;
+}
+
+.setup-mobile-section[open] .setup-mobile-section-summary .material-symbols-outlined {
+    transform: rotate(180deg);
+}
+
+.setup-mobile-section-panel {
+    border: 0;
+    border-top: 1px solid var(--line);
+    border-radius: 0;
+}
+
 .setup-intro {
     display: grid;
     gap: 8px;
@@ -1883,6 +1928,15 @@ input[type="number"] {
     .setup-content {
         grid-template-columns: 1fr;
         height: auto;
+    }
+
+    .setup-mobile-sections {
+        display: grid;
+        gap: 10px;
+    }
+
+    .setup-content > .setup-side-panel {
+        display: none;
     }
 
     .setup-side-panel {
