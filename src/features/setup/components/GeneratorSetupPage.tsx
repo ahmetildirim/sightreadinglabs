@@ -360,7 +360,6 @@ export default function GeneratorSetupPage({
             </main>
 
             <footer className="setup-footer">
-                © {new Date().getFullYear()} 88keys.app {APP_RELEASE_STAGE} | Minimalist sight-reading trainer.
             </footer>
         </div>
     );

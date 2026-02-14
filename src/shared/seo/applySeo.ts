@@ -42,9 +42,14 @@ function ensureCanonicalLink(): HTMLLinkElement {
 }
 
 function setJsonLd(id: string, data: Record<string, unknown>): void {
-  const selector = `script#${id}[type="application/ld+json"]`;
-  const existingScript = document.head.querySelector<HTMLScriptElement>(selector);
+  const existingNode = document.getElementById(id);
+  const existingScript =
+    existingNode instanceof HTMLScriptElement ? existingNode : null;
   const script = existingScript ?? document.createElement("script");
+
+  if (existingNode && !existingScript) {
+    existingNode.remove();
+  }
 
   script.id = id;
   script.type = "application/ld+json";
