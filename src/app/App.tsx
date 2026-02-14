@@ -28,6 +28,8 @@ import type { PersistedCustomTraining } from "../shared/storage";
 import { NOTE_NAMES, generateScore, type NoteName } from "../entities/score";
 import { APP_ROUTES } from "./routes";
 import type { AppPage, ReturnPage } from "./routes/types";
+import { APP_ROUTE_SEO } from "../shared/config/seo";
+import { applySeo } from "../shared/seo/applySeo";
 import { clamp, formatTime } from "../shared/utils";
 import {
   addCustomTraining,
@@ -85,6 +87,10 @@ export default function App() {
   const location = useLocation();
 
   const page = useMemo(() => pageFromPathname(location.pathname), [location.pathname]);
+
+  useEffect(() => {
+    applySeo(APP_ROUTE_SEO[page]);
+  }, [page]);
 
   const [settingsReturnPage, setSettingsReturnPage] = useState<ReturnPage>("setup");
 
