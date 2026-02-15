@@ -136,7 +136,7 @@ export function generateScore(options: GeneratorOptions): GeneratedScore {
     const noteElements = notes.map((note) => serializeNote(note)).join("\n");
 
     measureXmls.push(
-      [`      <measure number=\"${measureNumber}\">${attributes}`, noteElements, "      </measure>"].join("\n"),
+      [`      <measure number="${measureNumber}">${attributes}`, noteElements, "      </measure>"].join("\n"),
     );
 
     measureNumber += 1;
