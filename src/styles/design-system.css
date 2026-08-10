@@ -204,7 +204,7 @@ input[type="number"] {
     object-fit: contain;
 }
 
-.brand-mark-dark {
+.brand-mark .brand-mark-dark {
     display: none;
 }
 
