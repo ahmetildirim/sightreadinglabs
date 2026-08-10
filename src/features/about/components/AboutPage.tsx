@@ -1,5 +1,6 @@
 import AppTopBar from "../../../shared/ui/components/AppTopBar";
 import BackButton from "../../../shared/ui/components/BackButton";
+import BrandMark from "../../../shared/ui/components/BrandMark";
 import {
     APP_CONTACT_EMAIL,
     APP_DOMAIN,
@@ -24,7 +25,7 @@ export default function AboutPage({ onBack }: AboutPageProps) {
                 <div className="about-wrapper">
                     <section className="about-content">
                         <div className="about-icon-box" aria-hidden>
-                            <span className="material-symbols-outlined">piano</span>
+                            <BrandMark className="about-brand-mark" />
                         </div>
 
                         <h1>About Sight Reading Labs ({APP_RELEASE_STAGE})</h1>
