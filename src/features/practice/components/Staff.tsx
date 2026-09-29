@@ -19,7 +19,6 @@ export default function Staff({ scoreXml, cursorStyle, completedNotes }: StaffPr
   const containerRef = useRef<HTMLDivElement>(null);
   const osmdRef = useRef<OpenSheetMusicDisplay | null>(null);
   const osmdCtorRef = useRef<OpenSheetMusicDisplayCtor | null>(null);
-  const firstCursorLeftRef = useRef(0);
   const renderedNotesRef = useRef(0);
   const readyRef = useRef(false);
   const completedNotesRef = useRef(completedNotes);
@@ -60,20 +59,23 @@ export default function Staff({ scoreXml, cursorStyle, completedNotes }: StaffPr
     const cursorRect = cursor.cursorElement.getBoundingClientRect();
     const currentLeft = scrollContainer.scrollLeft;
     const viewportLeft = containerRect.left + scrollContainer.clientLeft;
-    const rightPadding = parseFloat(getComputedStyle(scrollContainer).paddingRight) || 0;
+    const containerStyle = getComputedStyle(scrollContainer);
+    const leftPadding = parseFloat(containerStyle.paddingLeft) || 0;
+    const rightPadding = parseFloat(containerStyle.paddingRight) || 0;
     const visibleRight = viewportLeft + scrollContainer.clientWidth - rightPadding;
 
     // Keep the staff still until the next note no longer fits on this page.
     if (cursorRect.right <= visibleRight) return;
 
     const cursorLeft = cursorRect.left - viewportLeft + currentLeft;
-    // Leave room to align even a short final page with the first note's position.
+    // New pages start at the left padding, without the opening clef's spacing.
+    // Leave enough trailing room to align a short final page there too.
     containerRef.current?.style.setProperty(
       "--staff-page-tail",
-      `${Math.max(0, scrollContainer.clientWidth - firstCursorLeftRef.current)}px`,
+      `${Math.max(0, scrollContainer.clientWidth - leftPadding)}px`,
     );
     scrollContainer.scrollTo({
-      left: Math.max(0, cursorLeft - firstCursorLeftRef.current),
+      left: Math.max(0, cursorLeft - leftPadding),
       behavior: "instant",
     });
   }, [getScrollContainer]);
@@ -82,15 +84,7 @@ export default function Staff({ scoreXml, cursorStyle, completedNotes }: StaffPr
     osmdRef.current?.cursor?.reset();
     renderedNotesRef.current = 0;
     containerRef.current?.style.removeProperty("--staff-page-tail");
-    const scrollContainer = getScrollContainer();
-    const cursorElement = osmdRef.current?.cursor?.cursorElement;
-    if (!scrollContainer || !cursorElement) return;
-
-    scrollContainer.scrollTo({ left: 0, behavior: "instant" });
-    firstCursorLeftRef.current =
-      cursorElement.getBoundingClientRect().left -
-      scrollContainer.getBoundingClientRect().left -
-      scrollContainer.clientLeft;
+    getScrollContainer()?.scrollTo({ left: 0, behavior: "instant" });
   }, [getScrollContainer]);
 
   const syncCursor = useCallback(() => {
