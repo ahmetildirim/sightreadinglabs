@@ -1,15 +1,10 @@
-import {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-} from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import type { OpenSheetMusicDisplay } from "opensheetmusicdisplay";
 
 interface StaffProps {
   scoreXml: string;
   cursorStyle: CursorStyle;
+  completedNotes: number;
 }
 
 interface CursorStyle {
@@ -17,21 +12,18 @@ interface CursorStyle {
   alpha: number;
 }
 
-export interface StaffHandle {
-  nextCursor(): void;
-  resetCursor(): void;
-}
-
 const SCORE_ZOOM = 1.5;
-type OpenSheetMusicDisplayCtor = typeof import("opensheetmusicdisplay")["OpenSheetMusicDisplay"];
+type OpenSheetMusicDisplayCtor = (typeof import("opensheetmusicdisplay"))["OpenSheetMusicDisplay"];
 
-const Staff = forwardRef<StaffHandle, StaffProps>(function Staff(
-  { scoreXml, cursorStyle },
-  ref,
-) {
+export default function Staff({ scoreXml, cursorStyle, completedNotes }: StaffProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const osmdRef = useRef<OpenSheetMusicDisplay | null>(null);
   const osmdCtorRef = useRef<OpenSheetMusicDisplayCtor | null>(null);
+  const firstCursorLeftRef = useRef(0);
+  const renderedNotesRef = useRef(0);
+  const readyRef = useRef(false);
+  const completedNotesRef = useRef(completedNotes);
+  completedNotesRef.current = completedNotes;
 
   const cursorStyleRef = useRef(cursorStyle);
   cursorStyleRef.current = cursorStyle;
@@ -59,37 +51,62 @@ const Staff = forwardRef<StaffHandle, StaffProps>(function Staff(
     return root.parentElement instanceof HTMLElement ? root.parentElement : null;
   }, []);
 
-  const scrollCursorIntoView = useCallback(
-    (behavior: ScrollBehavior) => {
-      const scrollContainer = getScrollContainer();
-      const cursorElement = osmdRef.current?.cursor?.cursorElement;
-      if (!scrollContainer || !cursorElement) return;
+  const scrollToNextPage = useCallback(() => {
+    const scrollContainer = getScrollContainer();
+    const cursor = osmdRef.current?.cursor;
+    if (!readyRef.current || !scrollContainer || !cursor || cursor.Iterator.EndReached) return;
 
-      const containerRect = scrollContainer.getBoundingClientRect();
-      const cursorRect = cursorElement.getBoundingClientRect();
-      const currentLeft = scrollContainer.scrollLeft;
+    const containerRect = scrollContainer.getBoundingClientRect();
+    const cursorRect = cursor.cursorElement.getBoundingClientRect();
+    const currentLeft = scrollContainer.scrollLeft;
+    const viewportLeft = containerRect.left + scrollContainer.clientLeft;
+    const rightPadding = parseFloat(getComputedStyle(scrollContainer).paddingRight) || 0;
+    const visibleRight = viewportLeft + scrollContainer.clientWidth - rightPadding;
 
-      const leftPadding = 72;
-      const rightPadding = Math.max(120, Math.round(scrollContainer.clientWidth * 0.26));
+    // Keep the staff still until the next note no longer fits on this page.
+    if (cursorRect.right <= visibleRight) return;
 
-      const cursorLeft = cursorRect.left - containerRect.left + currentLeft;
-      const cursorRight = cursorRect.right - containerRect.left + currentLeft;
+    const cursorLeft = cursorRect.left - viewportLeft + currentLeft;
+    // Leave room to align even a short final page with the first note's position.
+    containerRef.current?.style.setProperty(
+      "--staff-page-tail",
+      `${Math.max(0, scrollContainer.clientWidth - firstCursorLeftRef.current)}px`,
+    );
+    scrollContainer.scrollTo({
+      left: Math.max(0, cursorLeft - firstCursorLeftRef.current),
+      behavior: "instant",
+    });
+  }, [getScrollContainer]);
 
-      const visibleLeft = currentLeft + leftPadding;
-      const visibleRight = currentLeft + scrollContainer.clientWidth - rightPadding;
+  const resetCursor = useCallback(() => {
+    osmdRef.current?.cursor?.reset();
+    renderedNotesRef.current = 0;
+    containerRef.current?.style.removeProperty("--staff-page-tail");
+    const scrollContainer = getScrollContainer();
+    const cursorElement = osmdRef.current?.cursor?.cursorElement;
+    if (!scrollContainer || !cursorElement) return;
 
-      let targetLeft = currentLeft;
-      if (cursorLeft < visibleLeft) {
-        targetLeft = Math.max(0, cursorLeft - leftPadding);
-      } else if (cursorRight > visibleRight) {
-        targetLeft = cursorRight - scrollContainer.clientWidth + rightPadding;
-      }
+    scrollContainer.scrollTo({ left: 0, behavior: "instant" });
+    firstCursorLeftRef.current =
+      cursorElement.getBoundingClientRect().left -
+      scrollContainer.getBoundingClientRect().left -
+      scrollContainer.clientLeft;
+  }, [getScrollContainer]);
 
-      if (Math.abs(targetLeft - currentLeft) < 1) return;
-      scrollContainer.scrollTo({ left: targetLeft, behavior });
-    },
-    [getScrollContainer],
-  );
+  const syncCursor = useCallback(() => {
+    const cursor = osmdRef.current?.cursor;
+    if (!readyRef.current || !cursor) return;
+
+    const completed = completedNotesRef.current;
+    if (completed < renderedNotesRef.current) resetCursor();
+    cursor.show();
+    // Replay page boundaries when restoring a staff after loading or remounting.
+    while (renderedNotesRef.current < completed && !cursor.Iterator.EndReached) {
+      cursor.next();
+      renderedNotesRef.current += 1;
+      scrollToNextPage();
+    }
+  }, [resetCursor, scrollToNextPage]);
 
   const getOrCreateOsmd = useCallback(async (): Promise<OpenSheetMusicDisplay | null> => {
     if (osmdRef.current) return osmdRef.current;
@@ -100,40 +117,43 @@ const Staff = forwardRef<StaffHandle, StaffProps>(function Staff(
       osmdCtorRef.current = osmdModule.OpenSheetMusicDisplay;
     }
 
+    // Strict Mode can start another effect while the module import is pending.
+    if (osmdRef.current) return osmdRef.current;
+    if (!containerRef.current) return null;
+
     const OpenSheetMusicDisplayClass = osmdCtorRef.current;
     osmdRef.current = new OpenSheetMusicDisplayClass(containerRef.current, {
       drawMetronomeMarks: false,
       drawTitle: false,
       drawPartNames: false,
       drawMeasureNumbers: false,
-      followCursor: true,
+      followCursor: false,
       renderSingleHorizontalStaffline: true,
       spacingFactorSoftmax: 100,
-      autoResize: true,
+      // A single horizontal staff does not reflow with the viewport. OSMD's
+      // automatic redraw replaces its DOM and discards the scroll position.
+      autoResize: false,
     });
 
     return osmdRef.current;
   }, []);
 
-  useImperativeHandle(ref, () => ({
-    nextCursor: () => {
-      osmdRef.current?.cursor?.next();
-      window.requestAnimationFrame(() => {
-        scrollCursorIntoView("smooth");
-      });
-    },
-    resetCursor: () => {
-      osmdRef.current?.cursor?.reset();
-      const scrollContainer = getScrollContainer();
-      scrollContainer?.scrollTo({ left: 0, behavior: "auto" });
-      window.requestAnimationFrame(() => {
-        scrollCursorIntoView("auto");
-      });
-    },
-  }), [getScrollContainer, scrollCursorIntoView]);
+  useLayoutEffect(() => {
+    syncCursor();
+  }, [completedNotes, syncCursor]);
+
+  useEffect(() => {
+    const scrollContainer = getScrollContainer();
+    if (!scrollContainer) return;
+
+    const observer = new ResizeObserver(scrollToNextPage);
+    observer.observe(scrollContainer);
+    return () => observer.disconnect();
+  }, [getScrollContainer, scrollToNextPage]);
 
   useEffect(() => {
     let cancelled = false;
+    readyRef.current = false;
 
     (async () => {
       const osmd = await getOrCreateOsmd();
@@ -145,21 +165,20 @@ const Staff = forwardRef<StaffHandle, StaffProps>(function Staff(
       osmd.zoom = SCORE_ZOOM;
       osmd.render();
       applyCursorStyle(cursorStyleRef.current);
-      osmd.cursor?.reset();
-      const scrollContainer = getScrollContainer();
-      scrollContainer?.scrollTo({ left: 0, behavior: "auto" });
+      resetCursor();
+      readyRef.current = true;
+      syncCursor();
     })();
 
     return () => {
       cancelled = true;
+      readyRef.current = false;
     };
-  }, [scoreXml, getOrCreateOsmd, applyCursorStyle, getScrollContainer]);
+  }, [scoreXml, getOrCreateOsmd, applyCursorStyle, resetCursor, syncCursor]);
 
   useEffect(() => {
     applyCursorStyle(cursorStyle);
   }, [cursorStyle, applyCursorStyle]);
 
   return <div id="osmd" className="osmd" ref={containerRef} />;
-});
-
-export default Staff;
+}

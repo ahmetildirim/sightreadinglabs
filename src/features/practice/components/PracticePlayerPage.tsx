@@ -1,11 +1,8 @@
-import { Suspense, lazy, useCallback, useEffect, useState, type RefObject } from "react";
-
-import type { StaffHandle } from "./Staff";
+import { Suspense, lazy, useCallback, useEffect, useState } from "react";
 
 const Staff = lazy(() => import("./Staff"));
 
 interface PracticePlayerPageProps {
-    staffRef: RefObject<StaffHandle | null>;
     scoreXml: string;
     cursorStyle: { color: string; alpha: number };
     rangeLabel: string;
@@ -23,7 +20,6 @@ interface PracticePlayerPageProps {
 }
 
 export default function PracticePlayerPage({
-    staffRef,
     scoreXml,
     cursorStyle,
     rangeLabel,
@@ -168,7 +164,7 @@ export default function PracticePlayerPage({
                 <div className="practice-score-panel">
                     <div className="practice-score">
                         <Suspense fallback={<div className="osmd" aria-hidden />}>
-                            <Staff ref={staffRef} scoreXml={scoreXml} cursorStyle={cursorStyle} />
+                            <Staff scoreXml={scoreXml} cursorStyle={cursorStyle} completedNotes={completedNotes} />
                         </Suspense>
                     </div>
                 </div>

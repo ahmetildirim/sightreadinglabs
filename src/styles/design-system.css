@@ -1239,6 +1239,15 @@ input[type="number"] {
     min-width: 100%;
 }
 
+.practice-score .osmd>div::after {
+    content: "";
+    position: absolute;
+    left: 100%;
+    top: 0;
+    width: var(--staff-page-tail, 0px);
+    height: 1px;
+}
+
 .practice-score .osmd svg {
     width: auto;
     min-width: 100%;

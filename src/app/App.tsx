@@ -10,9 +10,6 @@ import {
 import { MISSED_MESSAGE_TIMEOUT_MS } from "../features/practice/constants";
 import { CURSOR_STYLES } from "../features/practice/config/cursorStyles";
 import type { CursorFeedback } from "../features/practice/types";
-import {
-  type StaffHandle,
-} from "../features/practice";
 import { useSightReadingSession, useTimer } from "../features/session";
 import type { ThemeMode } from "../features/settings/types";
 import type { PreviousSessionItem } from "../features/setup/types";
@@ -84,7 +81,6 @@ function pageFromPathname(pathname: string): AppPage {
 }
 
 export default function App() {
-  const staffRef = useRef<StaffHandle>(null);
   const missedMessageTimer = useRef<number | null>(null);
 
   const navigate = useNavigate();
@@ -264,7 +260,6 @@ export default function App() {
     setMissedNoteCounts({});
     resetTimer();
     clearMissedMessage();
-    staffRef.current?.resetCursor();
   }, [reset, score.expectedNotes, clearMissedMessage, resetTimer]);
 
   const onNoteOn = useCallback(
@@ -310,7 +305,6 @@ export default function App() {
       const result = handleNoteOff(note);
       if (result !== "advanced" && result !== "complete") return;
 
-      staffRef.current?.nextCursor();
       setCompletedNotes((value) => Math.min(totalNotes, value + 1));
       setCursorFeedback("idle");
       if (result === "complete") {
@@ -577,7 +571,6 @@ export default function App() {
           path={APP_ROUTES.practice}
           element={
             <PracticePage
-              staffRef={staffRef}
               scoreXml={score.xml}
               cursorStyle={cursorStyle}
               rangeLabel={`${minNote} - ${maxNote}`}
